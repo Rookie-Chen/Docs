@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a}from"./chunks/framework.DtMx7FFi.js";const i=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"Vue/Vue3.md","filePath":"Vue/Vue3.md","lastUpdated":1734247223000}'),r={name:"Vue/Vue3.md"};function o(s,c,n,d,p,u){return a(),t("div")}const m=e(r,[["render",o]]);export{i as __pageData,m as default};
