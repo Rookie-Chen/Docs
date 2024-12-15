@@ -1,37 +1,42 @@
-# .github > workflows > deploy.yml
 name: Deploy
 
 on:
-   push:
-      branches:
-         - main
+  push:
+    # 触发工作流的源分支
+    branches:
+      - main  # 你可以根据需要修改为你的主分支
 
 jobs:
-   deploy:
-      runs-on: ubuntu-latest
-      steps:
-         - uses: actions/checkout@v3
-           with:
-              fetch-depth: 0
-         - uses: actions/setup-node@v3
-           with:
-              node-version: 16
-              cache: npm
-         - run: npm install --frozen-lockfile
+  deploy:
+    runs-on: ubuntu-latest
 
-         - name: Build
-           run: npm run build
+    steps:
+      # 1. 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 拉取完整历史记录，方便后续操作
 
-         - name: Deploy
-            # 将构建产物 commit 到一个分支上，用于发布静态站点资源
-            # https://github.com/peaceiris/actions-gh-pages
-            #不要将peaceiris改为自己的仓库名，我单纯的以为这个需要改成自己的仓库名，部署上去就build失败了，需引用该仓库的配置
-           uses: peaceiris/actions-gh-pages@v3
-           with:
-              # Github 会在 workflow 中自动生成 GIHUBT_TOKEN，用于认证 workflow 的运行
-              github_token: ${{ secrets.GITHUB_TOKEN }}
-              # 静态资源目录设置
-              publish_dir: .vitepress/dist
-              # 默认发布到 gh-pages 分支上，可以指定特定的发布分支（不能选拉取代码的分支）
-              publish_branch: gh-pages
-              full_commit_message: ${{ github.event.head_commit.message }}
+      # 2. 设置 Node.js 环境
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16  # 你可以根据实际情况修改 Node.js 版本
+          cache: 'npm'  # 启用 npm 缓存，加速依赖安装
+
+      # 3. 安装依赖
+      - name: Install dependencies
+        run: npm install --frozen-lockfile  # 使用锁文件安装，确保版本一致性
+
+      # 4. 打包构建
+      - name: Build the site
+        run: npm run build  # 执行构建命令，生成静态文件
+
+      # 5. 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub 自动提供的 Token
+          publish_dir: .vitepress/dist  # 构建生成的文件夹路径，这里假设是 .vitepress/dist
+          publish_branch: gh-pages  # 发布到 gh-pages 分支，确保该分支与 `main` 不同
+          full_commit_message: ${{ github.event.head_commit.message }}  # 提交时的完整提交信息
